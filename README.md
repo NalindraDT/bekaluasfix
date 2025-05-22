@@ -57,7 +57,7 @@ DEL http://localhost:8080/prodi/{id prodi}
 PUT http://localhost:8080/prodi/{id prodi}
 ```
 
-
+## FRONT END
 ### 1. Ambil data dari repo front end
 ### 2. Atur ENV
 
@@ -66,9 +66,11 @@ SESSION_DRIVER=file
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=frontend_sinilai
+DB_DATABASE=
 DB_USERNAME=root
 DB_PASSWORD=
+
+SESSION_DRIVER=file
 
 ### 2. Masukan sesuai directory nya
 isi floder frontend : controller, view, route
