@@ -1,5 +1,63 @@
 # LANGKAH LANGKAH MENGUBAH
 
+## LARAVEL
+
+### 1. Buka terminal lalu lalu ketik
+``` laravel new (nama projek)```
+### 2. Pilih none
+### 3. Pilih 1 untuk php
+### 4. Pilih mysql
+### 5. Pilih no untuk migrations
+### 6. Pilih yes untuk menginstall npm
+
+
+## syntax mysql
+
+```
+CREATE TABLE kelas (
+kode_kelas VARCHAR(10) PRIMARY KEY,
+nama_kelas VARCHAR(50) NOT NULL);
+
+CREATE TABLE prodi (
+    id_prodi INT AUTO_INCREMENT PRIMARY KEY,
+    nama_prodi VARCHAR(100) NOT NULL
+);
+
+INSERT INTO kelas (kode_kelas, nama_kelas) VALUES
+('KLS01', 'TI A'),
+('KLS02', 'TM B'),
+('KLS03', 'MM A'),
+('KLS04', 'AK A'),
+('KLS05', 'TE A');
+
+INSERT INTO prodi (id_prodi, nama_prodi) VALUES
+(1, 'Teknik Informatika'),
+(2, 'Teknik Mesin'),
+(3, 'Multimedia'),
+(4, 'Akuntansi'),
+(5, 'Teknik Elektro');
+
+```
+
+## ENDPOINT
+
+```
+Kelas
+
+GET http://localhost:8080/kelas
+POST http://localhost:8080/kelas/{id kelas}
+DEL http://localhost:8080/kelas/{id kelas}
+PUT http://localhost:8080/kelas/{id kelas}
+
+Prodi
+
+GET http://localhost:8080/prodi
+POST http://localhost:8080/prodi/{id prodi}
+DEL http://localhost:8080/prodi/{id prodi}
+PUT http://localhost:8080/prodi/{id prodi}
+```
+
+
 ### 1. Ambil data dari repo front end
 ### 2. Atur ENV
 
