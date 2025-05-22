@@ -1,61 +1,199 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LANGKAH LANGKAH MENGUBAH
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### 1. Ambil data dari repo front end
+### 2. Atur ENV
 
-## About Laravel
+SESSION_DRIVER=file
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=frontend_sinilai
+DB_USERNAME=root
+DB_PASSWORD=
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 2. Masukan sesuai directory nya
+isi floder frontend : controller, view, route
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 3. buka folder controller front end github
 
-## Learning Laravel
+app -> http -> controllers -> (dalam sini)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 4. buka folder resources
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+resources -> views -> dalam sini
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 5. buka folder routes
+routes -> disini
 
-## Laravel Sponsors
+## ERROR handeling
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. kalau muncul error 'View [kelas.index] not found.' ganti nama folder/cari 
+### 2. Kalau muncul error di compact maka variable salah
+contoh
+Jika pada controller ada seperti ini
+```php
+public function index()
+    {
+        try {
+            $response = $this->client->request('GET', $this->baseUrl);
+            $mahasiswa = json_decode($response->getBody()->getContents(), true);
+            
+            return view('mahasiswa.index', compact('mahasiswas'));
+        } catch (RequestException $e) {
+            return back()->with('error', 'Error fetching data: ' . $e->getMessage());
+        }
+    }
+```
+maka error biasanya terjadi karena variable $mahasiswa dalam try harus sama dengan compact yang $mahasiswa
+harusnya -> try = $mahasiswa dan compact = $mahasiswa
 
-### Premium Partners
+### 3. Kalau muncul error " Undefined array key "kode_kelas" "
+dan kode edit di controller seperti ini
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```php
+ public function edit($kode_kelas)
+    {
+        try {
+            $response = $this->client->request('GET', $this->baseUrl . '/' . $kode_kelas);
+            $kelas = json_decode($response->getBody()->getContents(), true);
+            
+            return view('kelas.edit', compact('kelas'));
+        } catch (RequestException $e) {
+            return back()->with('error', 'Error fetching data: ' . $e->getMessage());
+        }
+    }
+```
+### maka solusinya itu =
 
-## Contributing
+```php
+public function edit($kode_kelas)
+{
+    try {
+        $response = $this->client->request('GET', $this->baseUrl . '/' . $kode_kelas);
+        $kelas = json_decode($response->getBody()->getContents(), true);
+        // Ambil data dari indeks 0
+        $kelas = $kelas[0] ?? null;
+        if (!$kelas) {
+            return back()->with('error', 'Data kelas tidak ditemukan');
+        }
+        return view('kelas.edit', compact('kelas'));
+    } catch (RequestException $e) {
+        return back()->with('error', 'Gagal mengambil data: ' . $e->getMessage());
+    }
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Kalau primary key merupakan auto increment
 
-## Code of Conduct
+#### A. store() diubah menjadi ini
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```php
+public function store(Request $request)
+{
+    $request->validate([
+        'nama_prodi' => 'required',
+    ]);
 
-## Security Vulnerabilities
+    try {
+        $response = $this->client->request('POST', $this->baseUrl, [
+            'json' => [
+                'nama_prodi' => $request->nama_prodi,
+                // Jangan kirim 'id_prodi' karena auto increment
+            ]
+        ]);
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+        return redirect()->route('prodi.index')->with('success', 'Prodi berhasil ditambahkan');
+    } catch (RequestException $e) {
+        return back()->with('error', 'Error adding data: ' . $e->getMessage())->withInput();
+    }
+}
+```
 
-## License
+#### B. Update
+```php
+public function update(Request $request, $id_prodi)
+{
+    $request->validate([
+        'nama_prodi' => 'required',
+    ]);
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    try {
+        $response = $this->client->request('PUT', $this->baseUrl . '/' . $id_prodi, [
+            'json' => [
+                'nama_prodi' => $request->nama_prodi,
+                // 'id_prodi' tidak perlu disertakan saat update jika auto increment
+            ]
+        ]);
+
+        return redirect()->route('prodi.index')->with('success', 'Prodi berhasil diperbarui');
+    } catch (RequestException $e) {
+        return back()->with('error', 'Error updating data: ' . $e->getMessage())->withInput();
+    }
+}
+```
+
+#### C. create.blade.php
+
+```php
+
+<div>
+    <label for="nama_prodi" class="block text-sm font-medium text-gray-700">Nama Prodi</label>
+    <input type="text" name="nama_prodi" id="nama_prodi" value="{{ old('nama_prodi') }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md @error('nama_prodi') border-red-500 @enderror" required>
+    @error('nama_prodi')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+</div>
+
+```
+
+### 5. Kalau 
+
+```php
+public function store(Request $request)
+    {
+        $request->validate([
+            'kode_kelas' => 'required',
+            'nama_kelas' => 'required',
+        ]);
+
+        try {
+            $response = $this->client->request('POST', $this->baseUrl, [
+                'json' => [
+                    'kode_kelas' => $request->kode_kelas,
+                    'nama_kelas' => $request->nama_kelas,
+                ]
+            ]);
+
+            return redirect()->route('kelas.index')->with('success', 'kelas berhasil ditambahkan');
+        } catch (RequestException $e) {
+            return back()->with('error', 'Error adding data: ' . $e->getMessage())->withInput();
+        }
+    }
+
+```
+menjadi ini
+
+```php
+public function store(Request $request)
+{
+    $request->validate([
+        'kode_kelas' => 'required',
+        'nama_kelas' => 'required',
+    ]);
+
+    try {
+        $response = $this->client->request('POST', $this->baseUrl, [
+            'form_params' => [
+                'kode_kelas' => $request->kode_kelas,
+                'nama_kelas' => $request->nama_kelas,
+            ]
+        ]);
+
+        return redirect()->route('kelas.index')->with('success', 'kelas berhasil ditambahkan');
+    } catch (RequestException $e) {
+        return back()->with('error', 'Error adding data: ' . $e->getMessage())->withInput();
+    }
+}
+
+```
