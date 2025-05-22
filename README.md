@@ -1,16 +1,5 @@
 # LANGKAH LANGKAH MENGUBAH
 
-## LARAVEL
-
-### 1. Buka terminal lalu lalu ketik
-``` laravel new (nama projek)```
-### 2. Pilih none
-### 3. Pilih 1 untuk php
-### 4. Pilih mysql
-### 5. Pilih no untuk migrations
-### 6. Pilih yes untuk menginstall npm
-
-
 ## syntax mysql
 
 ```
@@ -39,6 +28,73 @@ INSERT INTO prodi (id_prodi, nama_prodi) VALUES
 
 ```
 
+## LARAVEL
+
+### 1. Buka terminal lalu lalu ketik
+``` PS C:\laragon\www> laravel new (nama projek)```
+### 2. Pilih none
+```
+ Which starter kit would you like to install? [None]:
+  [none    ] None
+  [react   ] React
+  [vue     ] Vue
+  [livewire] Livewire
+ > none
+ ```
+
+### 3. Pilih 1 untuk php
+```
+Which testing framework do you prefer? [Pest]:
+  [0] Pest
+  [1] PHPUnit
+ > 1
+```
+### 4. Pilih mysql
+```
+Which database will your application use? [SQLite]:
+  [sqlite ] SQLite
+  [mysql  ] MySQL
+  [mariadb] MariaDB
+  [pgsql  ] PostgreSQL (Missing PDO extension)
+  [sqlsrv ] SQL Server (Missing PDO extension)
+ > mysql
+```
+### 5. Pilih no untuk migrations
+```
+Default database updated. Would you like to run the default database migrations? (yes/no) [yes]:
+ > no
+ ```
+
+### 6. Pilih yes untuk menginstall npm
+```
+Would you like to run npm install and npm run build? (yes/no) [yes]:
+ > yes
+```
+
+### 7. Ketik ini
+```
+PS C:\laragon\www> cd {nama projek}
+```
+### 8. lalu ketik
+```
+code .
+```
+
+### 9. Pergi ke .env pada vs code laravel lalu atur seperti ini
+
+```
+SESSION_DRIVER=file
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=
+DB_USERNAME=root
+DB_PASSWORD=
+
+```
+
+
 ## ENDPOINT
 
 ```
@@ -56,24 +112,24 @@ POST http://localhost:8080/prodi/{id prodi}
 DEL http://localhost:8080/prodi/{id prodi}
 PUT http://localhost:8080/prodi/{id prodi}
 ```
+## BACK END
+### 1. Ambil clone back end
+dengan cara 
+
+``` 
+git clone https://github.com/NalindraDT/bekaluasfix.git
+```
+
 
 ## FRONT END
+
 ### 1. Ambil data dari repo front end
-### 2. Atur ENV
+dengan cara 
 
-SESSION_DRIVER=file
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=
-DB_USERNAME=root
-DB_PASSWORD=
-
-SESSION_DRIVER=file
+``` git clone https://github.com/NalindraDT/bekaluasfix.git```
 
 ### 2. Masukan sesuai directory nya
-isi floder frontend : controller, view, route
+isi folder frontend : controller, view, route
 
 ### 3. buka folder controller front end github
 
