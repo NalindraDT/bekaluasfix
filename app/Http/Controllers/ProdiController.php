@@ -3,28 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Http;
 
 class ProdiController extends Controller
 {
-    protected $client;
     protected $baseUrl;
 
     public function __construct()
     {
-        $this->client = new Client();
         $this->baseUrl = 'http://localhost:8080/prodi';
     }
 
     public function index()
     {
         try {
-            $response = $this->client->request('GET', $this->baseUrl);
-            $prodiss = json_decode($response->getBody()->getContents(), true);
+            $response = Http::get($this->baseUrl);
+            $prodiss = $response->json();
 
             return view('prodi.index', compact('prodiss'));
-        } catch (RequestException $e) {
+        } catch (\Exception $e) {
             return back()->with('error', 'Error fetching data: ' . $e->getMessage());
         }
     }
@@ -42,15 +39,13 @@ class ProdiController extends Controller
         ]);
 
         try {
-            $response = $this->client->request('POST', $this->baseUrl, [
-                'json' => [
-                    'nama_prodi' => $request->nama_prodi,
-                    'id_prodi' => $request->id_prodi,
-                ]
+            $response = Http::asForm()->post($this->baseUrl, [
+                'id_prodi' => $request->id_prodi,
+                'nama_prodi' => $request->nama_prodi,
             ]);
 
-            return redirect()->route('prodi.index')->with('success', 'prodi berhasil ditambahkan');
-        } catch (RequestException $e) {
+            return redirect()->route('prodi.index')->with('success', 'Prodi berhasil ditambahkan');
+        } catch (\Exception $e) {
             return back()->with('error', 'Error adding data: ' . $e->getMessage())->withInput();
         }
     }
@@ -58,15 +53,16 @@ class ProdiController extends Controller
     public function edit($id_prodi)
     {
         try {
-            $response = $this->client->request('GET', $this->baseUrl . '/' . $id_prodi);
-            $prodi = json_decode($response->getBody()->getContents(), true);
-            // Ambil data dari indeks 0
+            $response = Http::get("{$this->baseUrl}/{$id_prodi}");
+            $prodi = $response->json();
             $prodi = $prodi[0] ?? null;
+
             if (!$prodi) {
                 return back()->with('error', 'Data prodi tidak ditemukan');
             }
+
             return view('prodi.edit', compact('prodi'));
-        } catch (RequestException $e) {
+        } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengambil data: ' . $e->getMessage());
         }
     }
@@ -78,15 +74,13 @@ class ProdiController extends Controller
         ]);
 
         try {
-            $response = $this->client->request('PUT', $this->baseUrl . '/' . $id_prodi, [
-                'json' => [
-                    'nama_prodi' => $request->nama_prodi,
-                    'id_prodi' => $id_prodi,
-                ]
+            $response = Http::put("{$this->baseUrl}/{$id_prodi}", [
+                'id_prodi' => $id_prodi,
+                'nama_prodi' => $request->nama_prodi,
             ]);
 
-            return redirect()->route('prodi.index')->with('success', 'prodi berhasil diperbarui');
-        } catch (RequestException $e) {
+            return redirect()->route('prodi.index')->with('success', 'Prodi berhasil diperbarui');
+        } catch (\Exception $e) {
             return back()->with('error', 'Error updating data: ' . $e->getMessage())->withInput();
         }
     }
@@ -94,10 +88,10 @@ class ProdiController extends Controller
     public function destroy($id_prodi)
     {
         try {
-            $response = $this->client->request('DELETE', $this->baseUrl . '/' . $id_prodi);
+            $response = Http::delete("{$this->baseUrl}/{$id_prodi}");
 
-            return redirect()->route('prodi.index')->with('success', 'prodi berhasil dihapus');
-        } catch (RequestException $e) {
+            return redirect()->route('prodi.index')->with('success', 'Prodi berhasil dihapus');
+        } catch (\Exception $e) {
             return back()->with('error', 'Error deleting data: ' . $e->getMessage());
         }
     }

@@ -1,57 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex justify-between items-center">
-    <h3 class="text-gray-700 text-3xl font-medium">prodi</h3>
-    <a href="{{ route('prodi.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-        <i class="fas fa-plus mr-2"></i> Tambah prodi
-    </a>
-</div>
+<div class="bg-gray-900 text-white min-h-screen p-8 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-4xl font-extrabold">🎓 Data Prodi</h3>
+        <a href="{{ route('prodi.create') }}"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg shadow-md transition">
+            <i class="fas fa-plus mr-2"></i> Tambah Prodi
+        </a>
+    </div>
 
-<div class="mt-8">
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Prodi</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Prodi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @if(isset($prodiss) && is_array($prodiss) && count($prodiss) > 0)
+    <!-- Input Pencarian -->
+    <div class="mb-4">
+        <input type="text" id="searchInput"
+            placeholder="Cari prodi..."
+            class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-indigo-500">
+    </div>
+
+    <div class="overflow-x-auto mt-6 rounded-lg shadow-inner">
+        <table class="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+            <thead class="bg-gray-700 uppercase text-sm tracking-wider text-gray-300">
+                <tr>
+                    <th class="px-6 py-3 text-left">Nama Prodi</th>
+                    <th class="px-6 py-3 text-left">ID Prodi</th>
+                    <th class="px-6 py-3 text-left">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="prodiTable" class="divide-y divide-gray-700">
+                @if(isset($prodiss) && is_array($prodiss) && count($prodiss) > 0)
                     @foreach($prodiss as $prodi)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $prodi['nama_prodi'] }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-500">{{ $prodi['id_prodi'] }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('prodi.edit', $prodi['id_prodi']) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form action="{{ route('prodi.destroy', $prodi['id_prodi']) }}" method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Apakah Anda yakin ingin menghapus mahasiswa ini?')">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                        <tr class="prodi-row">
+                            <td class="px-6 py-4">{{ $prodi['nama_prodi'] }}</td>
+                            <td class="px-6 py-4">{{ $prodi['id_prodi'] }}</td>
+                            <td class="px-6 py-4 space-x-2">
+                                <a href="{{ route('prodi.edit', $prodi['id_prodi']) }}"
+                                    class="text-indigo-400 hover:text-indigo-200">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="{{ route('prodi.destroy', $prodi['id_prodi']) }}" method="POST"
+                                    class="inline-block"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus prodi ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 hover:text-red-200">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     @endforeach
-                    @else
+                @else
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                            Tidak ada data mahasiswa
-                        </td>
+                        <td colspan="3" class="text-center py-4 text-gray-400">Tidak ada data prodi</td>
                     </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
+                @endif
+            </tbody>
+        </table>
     </div>
 </div>
+
+<!-- SCRIPT PENCARIAN -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const rows = document.querySelectorAll('.prodi-row');
+
+        searchInput.addEventListener('keyup', function () {
+            const keyword = this.value.toLowerCase();
+
+            rows.forEach(row => {
+                const nama = row.cells[0].textContent.toLowerCase();
+                const id = row.cells[1].textContent.toLowerCase();
+                const match = nama.includes(keyword) || id.includes(keyword);
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    });
+</script>
 @endsection
